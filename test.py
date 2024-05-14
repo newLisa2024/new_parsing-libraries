@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from googletrans import Translator
 
 url = "https://randomword.com/"
 
@@ -20,27 +21,45 @@ def get_english_words():
     except:
         print(f"произошла ошибка при обращении к {url}")
 
+
+def translate_to_russian(text):
+    translator = Translator()
+    try:
+        translated = translator.translate(text, dest='ru')
+        return translated.text
+    except Exception as e:
+        print(f"Ошибка при переводе: {e}")
+        return text
+
 def word_game():
-    print(f'добро пожаловать в игру "слова"')
+    print('Добро пожаловать в игру "Слова"')
     while True:
         word_dict = get_english_words()
+        if not word_dict:
+            print("Не удалось получить слово и определение.")
+            break
+
         word = word_dict.get('english_words')
         word_definition = word_dict.get('word_definition')
 
-        print(f'значение слова - {word_definition}')
-        user = input('введите слово: ')
-        if user == word:
-            print(f'вы угадали слово')
+        translated_word = translate_to_russian(word)
+        translated_definition = translate_to_russian(word_definition)
+
+        print(f'Значение слова - {translated_definition}')
+        user = input('Введите слово: ')
+        if user.lower() == translated_word.lower():
+            print('Вы угадали слово')
             break
         else:
-            print(f'вы не угадали слово')
-            print(f'слово - {word}')
+            print('Вы не угадали слово')
+            print(f'Слово - {translated_word}')
 
-        play_again = input('хотите сыграть еще раз? (y/n) ')
+        play_again = input('Хотите сыграть еще раз? (y/n) ')
         if play_again.lower() != 'y':
-            print(f'спасибо за игру')
+            print('Спасибо за игру')
             break
 
 word_game()
+
 
 
